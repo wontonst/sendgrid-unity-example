@@ -39,25 +39,25 @@ public class SG_Email : MonoBehaviour {
 	 	Debug.Log("Success, email sent through SMTP!");
 	}
  
-    public void SendSendgridEmailWebAPI () {
-        string url = "https://sendgrid.com/api/mail.send.json?";
-		
-		url += "to=" + toEmail;
-		url += "&from=" + fromEmail;
+	public void SendSendgridEmailWebAPI () {
+		string url = "https://sendgrid.com/api/mail.send.json?";
+		WWWForm form = new WWWForm ();
+		form.AddField ("to", toEmail);
+		form.AddField ("from", fromEmail);
 		
 		//you have to change every instance of space to %20 or you'll get a 400 error
 		string subjectWithoutSpace = subject.Replace(" ", "%20");
-		url += "&subject=" + subjectWithoutSpace;
+		form.AddField ("subject", subjectWithoutSpace);
 		string bodyWithoutSpace = body.Replace(" ", "%20");
-		
-		url += "&text=" + bodyWithoutSpace;
-		url += "&x-smtpapi=" + xsmtpapiJSON;
-		url += "&api_user=" + api_user;
-		url += "&api_key=" + api_key;
-		
-        WWW www = new WWW(url);
-        StartCoroutine(WaitForRequest(www));
-    }
+		form.AddField ("text", bodyWithoutSpace);
+
+		//form.AddField ("x-smtpapi", xsmtpapiJSON);
+		form.AddField ("api_user", api_user);
+		form.AddField ("api_key", api_key);
+
+		WWW www = new WWW(url,form);
+		StartCoroutine(WaitForRequest(www));
+	}
  
     IEnumerator WaitForRequest(WWW www)
     {
